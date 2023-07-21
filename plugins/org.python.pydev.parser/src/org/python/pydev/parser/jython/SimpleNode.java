@@ -30,6 +30,9 @@ public class SimpleNode implements Node, ISimpleNode {
 
     public SimpleNode parent;
 
+    public int endLine;
+    public int endColumn;
+
     /**
      * each node may have a number of associated comments, although they are not in the visiting structure by default
      * (it appears separately from that in this attribute, so, when doing a traverse in some node, the comments
