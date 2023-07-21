@@ -11,7 +11,7 @@
 @echo The contents here may just be copied into cmd.exe or some other shell (just note that
 @echo in some cases a call to git may stop executing, so, you may need to copy the commands in chunks).
 
-set BRANCH=master
+set BRANCH=develop
 
 set DRIVE=D:
 set BASE_LOCAL_PYDEV_GIT=D:\workspace\00_git\murph_project\libs\Pydev_10.2.1_fork
@@ -46,7 +46,7 @@ mkdir %DEPLOY_DIR%
 %DRIVE%
 cd %BUILD_DIR%
 git clone %BASE_LOCAL_PYDEV_GIT%
-@echo git clone git://github.com/fabioz/Pydev.git -- this could be used when building against the base git instead of a local git
+@echo git clone git://github.com/juniair/Pydev_10.2.1_fork.git -- this could be used when building against the base git instead of a local git
 cd Pydev
 git reset --hard
 git clean -f -d -x
