@@ -31,7 +31,7 @@ SET MAVEN_OPTS=-Xmx1024m
 
 set BASEOS=win32
 set BASEWS=win32
-set BASEARCH=x86
+set BASEARCH=x64
 
 set PATH=C:\bin\FastCopy211;%PATH%
 set PATH=C:\Windows\system32;%PATH%
