@@ -520,32 +520,4 @@ public final class TreeBuilder26 extends AbstractTreeBuilder implements ITreeBui
 
     }
 
-    private argumentsType makeArguments(int l) throws Exception {
-        NameTok kwarg = null;
-        NameTok stararg = null;
-        if (l > 0 && stack.peekNode().getId() == JJTEXTRAKEYWORDLIST) {
-            ExtraArg node = (ExtraArg) stack.popNode();
-            kwarg = node.tok;
-            l--;
-            addSpecialsAndClearOriginal(node, kwarg);
-        }
-        if (l > 0 && stack.peekNode().getId() == JJTEXTRAARGLIST) {
-            ExtraArg node = (ExtraArg) stack.popNode();
-            stararg = node.tok;
-            l--;
-            addSpecialsAndClearOriginal(node, stararg);
-        }
-        ArrayList<SimpleNode> list = new ArrayList<SimpleNode>();
-        for (int i = l - 1; i >= 0; i--) {
-            SimpleNode popped = stack.popNode();
-            try {
-                list.add(popped);
-            } catch (ClassCastException e) {
-                throw new ParseException("Internal error (ClassCastException):" + e.getMessage() + "\n" + popped,
-                        popped);
-            }
-        }
-        Collections.reverse(list);//we get them in reverse order in the stack
-        return makeArguments(list.toArray(new DefaultArg[0]), stararg, kwarg);
-    }
 }
