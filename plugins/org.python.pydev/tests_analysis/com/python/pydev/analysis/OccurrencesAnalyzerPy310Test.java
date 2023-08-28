@@ -520,6 +520,16 @@ public class OccurrencesAnalyzerPy310Test extends AnalysisTestsBase {
         checkNoError();
     }
 
+    public void testWithStmt4() {
+        doc = new Document("value = None\n"
+                + "\n"
+                + "match value:\n"
+                + "    case None:\n"
+                + "        print('matched none')\n"
+                + "");
+        checkNoError();
+    }
+
     public void testRestInMatch() {
         doc = new Document("def swallow_report(bird):\n"
                 + "    match bird:\n"
@@ -542,5 +552,51 @@ public class OccurrencesAnalyzerPy310Test extends AnalysisTestsBase {
                 + "\n"
                 + "swallow_report(b1)");
         checkNoError();
+    }
+
+    public void testTypingInfoInStr() {
+        doc = new Document("from typing import Hashable\n"
+                + "a: \"Hashable\"\n"
+                + "");
+        checkNoError();
+    }
+
+    public void testTypingInfoInStrBad() {
+        doc = new Document("\n"
+                + "a: 'Hashable'\n"
+                + "");
+        IMessage[] messages = checkError("Undefined variable: Hashable\n");
+        assertEquals(1, messages.length);
+        assertEquals(2, messages[0].getStartLine(doc));
+        assertEquals(2, messages[0].getEndLine(doc));
+        assertEquals(5, messages[0].getStartCol(doc));
+        assertEquals(5 + 8, messages[0].getEndCol(doc));
+    }
+
+    public void testTypingInfoInStrBad2() {
+        doc = new Document("\n"
+                + "def method(b: 'Hashable'):\n"
+                + "    pass\n"
+                + "");
+        IMessage[] messages = checkError("Undefined variable: Hashable\n");
+        assertEquals(1, messages.length);
+        assertEquals(2, messages[0].getStartLine(doc));
+        assertEquals(2, messages[0].getEndLine(doc));
+        assertEquals(16, messages[0].getStartCol(doc));
+        assertEquals(16 + 8, messages[0].getEndCol(doc));
+    }
+
+    public void testTypingInfoInStrBad3() {
+        doc = new Document("\n"
+                + "def method(b: 'this.. is not ..correct'):\n"
+                + "    pass\n"
+                + "");
+        IMessage[] messages = checkErrorWithFilter((msg) -> {
+            return msg.startsWith("SyntaxError: ");
+        });
+        assertEquals(1, messages.length);
+        assertEquals(2, messages[0].getStartLine(doc));
+        assertEquals(2, messages[0].getEndLine(doc));
+        assertEquals(32, messages[0].getStartCol(doc));
     }
 }

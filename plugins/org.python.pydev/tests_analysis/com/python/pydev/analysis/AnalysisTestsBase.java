@@ -9,6 +9,7 @@
  */
 package com.python.pydev.analysis;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -153,6 +154,24 @@ public class AnalysisTestsBase extends CodeCompletionTestsBase {
         return msgs;
     }
 
+    public interface IErrorFilter {
+        public boolean accept(String m);
+    }
+
+    protected IMessage[] checkErrorWithFilter(IErrorFilter filter) {
+        analyzer = new OccurrencesAnalyzer();
+        msgs = analyze();
+
+        List<IMessage> ret = new ArrayList<>();
+        for (IMessage msg : msgs) {
+            if (filter.accept(msg.getMessage().trim())) {
+                ret.add(msg);
+            }
+        }
+
+        return ret.toArray(new IMessage[0]);
+    }
+
     /**
      * Uses the doc attribute as the module and makes the analysis, checking if no error is found.
      * @return the messages that were reported as errors
@@ -183,6 +202,9 @@ public class AnalysisTestsBase extends CodeCompletionTestsBase {
         assertEquals(GRAMMAR_TO_USE_FOR_PARSING, nature.getGrammarVersion());
         try {
             final SourceModule mod = AbstractModule.createModuleFromDoc(null, null, doc, nature, true);
+            if (mod.parseError != null) {
+                throw new RuntimeException(mod.parseError);
+            }
             return analyzer.analyzeDocument(nature, mod, prefs, doc, new NullProgressMonitor(),
                     new TestIndentPrefs(true, 4));
         } catch (MisconfigurationException e) {
